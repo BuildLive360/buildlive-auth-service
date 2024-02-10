@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface UserCredentialRepository extends JpaRepository<UserCredential, UUID> {
 
    Optional<UserCredential> findByName(String username);
+   Optional<UserCredential> findByEmail(String email);
 }
