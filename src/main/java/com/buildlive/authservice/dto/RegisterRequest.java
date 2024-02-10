@@ -1,28 +1,24 @@
-package com.buildlive.authservice.entity;
+package com.buildlive.authservice.dto;
 
-import jakarta.persistence.*;
+import com.buildlive.authservice.entity.Role;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Entity
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCredential {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+public class RegisterRequest {
     private UUID id;
     private String name;
     private String email;
     private String phone;
     private String password;
-    private boolean isBlocked = false ;
+    private boolean isBlocked;
     private boolean isVerified;
-    @Enumerated(EnumType.STRING)
     private Role roles;
-
 }

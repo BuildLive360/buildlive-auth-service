@@ -8,6 +8,6 @@ import java.util.Map;
 public interface JwtService {
 
     void validateToken(final String token);
-    String createToken(Map<String,Object> claims, String userName);
-    String generateToken(String userName);
+    String createToken(Map<String,Object> claims, String userName,String role);
+    String generateToken(String userName,String role);
 }
