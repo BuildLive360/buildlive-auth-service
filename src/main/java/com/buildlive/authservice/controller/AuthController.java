@@ -1,9 +1,6 @@
 package com.buildlive.authservice.controller;
 
-import com.buildlive.authservice.dto.AuthRequest;
-import com.buildlive.authservice.dto.AuthResponse;
-import com.buildlive.authservice.dto.RegisterRequest;
-import com.buildlive.authservice.dto.RegisterResponse;
+import com.buildlive.authservice.dto.*;
 import com.buildlive.authservice.entity.UserCredential;
 import com.buildlive.authservice.exception.InvalidLoginException;
 import com.buildlive.authservice.repository.UserCredentialRepository;
@@ -15,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,8 +30,14 @@ public class AuthController {
 //    }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> addNewUser(@RequestBody RegisterRequest request){
+    public ResponseEntity<OtpDto> addNewUser(@RequestBody RegisterRequest request){
         return authService.registerUser(request);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<OtpResponse> verifyOtp(@RequestBody OptRequest request){
+        System.out.println("ooo");
+          return authService.verifyAccount(request);
     }
 
 
