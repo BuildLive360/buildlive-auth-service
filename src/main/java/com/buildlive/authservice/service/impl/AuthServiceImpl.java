@@ -1,24 +1,21 @@
 package com.buildlive.authservice.service.impl;
 
-import com.buildlive.authservice.dto.OptRequest;
-import com.buildlive.authservice.dto.OtpDto;
-import com.buildlive.authservice.dto.OtpResponse;
-import com.buildlive.authservice.dto.RegisterRequest;
+import com.buildlive.authservice.dto.*;
 import com.buildlive.authservice.entity.Role;
 import com.buildlive.authservice.entity.UserCredential;
+import com.buildlive.authservice.exception.UserNotFoundException;
 import com.buildlive.authservice.repository.UserCredentialRepository;
 import com.buildlive.authservice.service.AuthService;
 import com.buildlive.authservice.service.JwtService;
+import com.buildlive.authservice.service.feign.UserFeign;
 import com.buildlive.authservice.util.EmailUtil;
 import com.buildlive.authservice.util.OtpUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +28,9 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailUtil emailUtil;
+    private final UserFeign userFeign;
     private final OtpUtil otpUtil;
+
 
 
 
@@ -86,12 +85,18 @@ public class AuthServiceImpl implements AuthService {
                     .id(user.getId())
                     .email(user.getEmail())
                     .name(user.getName())
+                    .password(user.getPassword())
+                    .phone(user.getPhone())
+                    .otp(user.getOtp())
+                    .expiryTime(user.getExpiryTime())
                     .isVerified(false)
+                    .isBlocked(false)
                     .status("pending")
                     .message("Verify Otp")
                     .build();
 
             System.out.println(otpDto.getOtp());
+//            userFeign.createUser(otpDto);
 
             return ResponseEntity.ok(otpDto);
 
@@ -153,17 +158,38 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    @Override
+    public AuthResponse getCompanyById(UUID uuid) {
+        AuthResponse authResponse = new AuthResponse();
+       CompanyDto response =  userFeign.getCompany(uuid);
+       if( response.isCompanyIsNotPresent()){
+           response.setCompanyIsNotPresent(true);
+           authResponse.setCompanyDto(response);
+           return authResponse;
+       }
+       else {
+           response.setCompanyIsNotPresent(false);
+           authResponse.setCompanyDto(response);
+           return authResponse;
+       }
+    }
 
-//    private UserCredential saveUser(RegisterRequest request) {
-//        UserCredential userCredential = new UserCredential();
-//        userCredential.setName(request.getName());
-//        userCredential.setEmail(request.getEmail());
-//        userCredential.setPhone(request.getPhone());
-//        userCredential.setPassword(passwordEncoder.encode(request.getPassword()));
-//        userCredential.setBlocked(false);
-//        userCredential.setVerified(false);
-//        userCredential.setRoles(Role.USER);
-//
-//        return userCredentialRepository.save(userCredential);
-//    }
+    @Override
+    public UserCredential editUser(UUID id, UserCredential userCredential) {
+       Optional<UserCredential> optionalUser =  userCredentialRepository.findById(id);
+       if(optionalUser.isPresent()){
+           UserCredential user = optionalUser.get();
+           user.setEmail(userCredential.getEmail());
+           user.setName(userCredential.getName());
+           user.setPhone(userCredential.getPhone());
+           userCredentialRepository.save(user);
+           return user;
+       }
+        else {
+            throw new UserNotFoundException("User Not found");
+       }
+    }
+
+
+
 }

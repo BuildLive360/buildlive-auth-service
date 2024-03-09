@@ -1,6 +1,5 @@
 package com.buildlive.authservice.dto;
 
-import com.buildlive.authservice.entity.UserCredential;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
+public class VerifyDto {
 
-    private UserCredential user;
-    private String token;
-    private CompanyDto companyDto;
+    private boolean isVerified;
 }
