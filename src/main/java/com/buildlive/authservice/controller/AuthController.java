@@ -24,10 +24,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserCredentialRepository userCredentialRepository;
 
-//    @PostMapping("/register")
-//    public String addNewUser(@RequestBody UserCredential user){
-//        return authService.saveUser(user);
-//    }
+
 
     @PostMapping("/register")
     public ResponseEntity<OtpDto> addNewUser(@RequestBody RegisterRequest request){
@@ -37,7 +34,7 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<OtpResponse> verifyOtp(@RequestBody OptRequest request){
         System.out.println("ooo");
-          return authService.verifyAccount(request);
+        return authService.verifyAccount(request);
     }
 
 
@@ -49,6 +46,7 @@ public class AuthController {
 
         UserCredential user = userCredentialRepository.findByName(authRequest.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
 
         System.out.println(authRequest.getPassword());
 
@@ -73,30 +71,7 @@ public class AuthController {
             throw new RuntimeException(" invalid access");
         }
     }
-//
-//    }
-//    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest){
-//
-//    }
 
-
-
-
-
-//    @PostMapping("/token")
-//    public String getToken(@RequestBody AuthRequest authRequest){
-//
-//
-//
-//       Authentication authenticate =  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(),authRequest.getPassword()));
-//       if(authenticate.isAuthenticated()){
-//           return authService.generateToken(authRequest.getName());
-//       }
-//       else {
-//           throw new RuntimeException(" invalid access");
-//       }
-//
-//    }
 
     @GetMapping("/validate")
     public String validateToken(@RequestParam("token") String token){
@@ -104,6 +79,7 @@ public class AuthController {
         authService.validateToken(token);
         return "Token is valid";
     }
+
 
 
 }
