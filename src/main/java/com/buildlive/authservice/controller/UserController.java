@@ -23,13 +23,13 @@ public class UserController {
     @Autowired
     private AuthService authService;
 
-           @PutMapping("/users/edit/{id}")
-            public ResponseEntity <UserCredential> editUser(@PathVariable UUID id,
+           @PutMapping("/users/edit-user")
+            public ResponseEntity <UserCredential> editUser(
                                                     @RequestBody  UserCredential userCredential
                                                     ){
-               System.out.println("id"+id);
+               System.out.println("id"+userCredential.getId());
 
-                return ResponseEntity.ok(authService.editUser(id,userCredential));
+                return ResponseEntity.ok(authService.editUser(userCredential));
             }
 
     @GetMapping("/users/get-company")

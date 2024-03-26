@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@FeignClient(name = "COMPANY-SERVICE")
+@FeignClient(name = "USER-SERVICE")
 public interface UserFeign {
 
-//        @PostMapping("/api/v1/user/save-user")
-//        ResponseEntity<UserCredential> createUser(@RequestBody OtpDto otpDto);
-//
-//        @PutMapping("/api/v1/user/verify-user")
-//        ResponseEntity<UserCredential> verifyUser(@RequestBody VerifyDto verifyDto);
+        @PostMapping("/api/v1/user/save-user")
+        ResponseEntity<UserCredential> createUser(@RequestBody OtpDto otpDto);
+
+        @PostMapping("/api/v1/user/verify-user")
+        ResponseEntity<UserCredential> verifyUser(@RequestBody VerifyDto verifyDto);
 
 
     @GetMapping("api/v1/company/{id}")

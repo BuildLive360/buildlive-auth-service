@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
 
             System.out.println(otpDto.getOtp());
-//            userFeign.createUser(otpDto);
+            userFeign.createUser(otpDto);
 
             return ResponseEntity.ok(otpDto);
 
@@ -135,6 +135,10 @@ public class AuthServiceImpl implements AuthService {
                 // Verify the OTP
                 if (user.getOtp().equals(request.getOtpValue())) {
                     user.setVerified(true);
+                    userFeign.verifyUser(VerifyDto.builder()
+                                    .id(user.getId())
+                                    .isVerified(user.isVerified())
+                                    .build());
                     userCredentialRepository.save(user);
 
                     otpResponse.setStatus("Verified");
@@ -175,8 +179,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserCredential editUser(UUID id, UserCredential userCredential) {
-       Optional<UserCredential> optionalUser =  userCredentialRepository.findById(id);
+    public UserCredential editUser( UserCredential userCredential) {
+       Optional<UserCredential> optionalUser =  userCredentialRepository.findById(userCredential.getId());
        if(optionalUser.isPresent()){
            UserCredential user = optionalUser.get();
            user.setEmail(userCredential.getEmail());

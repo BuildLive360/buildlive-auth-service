@@ -21,7 +21,7 @@ public interface AuthService {
 
     AuthResponse getCompanyById(UUID uuid);
 
-    UserCredential editUser(UUID id,UserCredential userCredential);
+    UserCredential editUser(UserCredential userCredential);
 
 
 }
