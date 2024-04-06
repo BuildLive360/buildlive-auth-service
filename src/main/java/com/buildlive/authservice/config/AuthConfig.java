@@ -29,7 +29,7 @@ public class AuthConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/v1/auth/register",
                                 "/api/v1/auth/user-login","/api/v1/auth/validate","/api/v1/auth/verify-otp",
-                                "/api/v1/auth/users/**","/api/v1/auth/users/get-company")
+                                "/api/v1/auth/users/**","/actuator/health")
                         .permitAll())
                         .build();
     }

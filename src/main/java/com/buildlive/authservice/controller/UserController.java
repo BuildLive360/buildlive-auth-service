@@ -5,6 +5,7 @@ import com.buildlive.authservice.dto.AuthResponse;
 import com.buildlive.authservice.entity.UserCredential;
 import com.buildlive.authservice.repository.UserCredentialRepository;
 import com.buildlive.authservice.service.AuthService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class UserController {
             }
 
     @GetMapping("/users/get-company")
+    @CircuitBreaker(name = "user-service",fallbackMethod = "serviceFallBackMethod")
     public ResponseEntity<AuthResponse> getCompany(@RequestBody AuthRequest authRequest){
         UserCredential user = userCredentialRepository.findByName(authRequest.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -40,6 +42,10 @@ public class UserController {
         AuthResponse response =  authService.getCompanyById(user.getId());
         return new ResponseEntity<>(response, HttpStatus.OK);
 
+    }
+
+    public ResponseEntity<AuthResponse> serviceFallBackMethod(Exception e){
+        return (ResponseEntity<AuthResponse>) ResponseEntity.status(HttpStatus.BAD_REQUEST);
     }
 
 
