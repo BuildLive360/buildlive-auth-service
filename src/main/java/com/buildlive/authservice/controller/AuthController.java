@@ -5,6 +5,7 @@ import com.buildlive.authservice.entity.UserCredential;
 import com.buildlive.authservice.exception.InvalidLoginException;
 import com.buildlive.authservice.repository.UserCredentialRepository;
 import com.buildlive.authservice.service.AuthService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,8 @@ public class AuthController {
     public ResponseEntity<OtpDto> addNewUser(@RequestBody RegisterRequest request){
         return authService.registerUser(request);
     }
+
+
 
     @PostMapping("/verify-otp")
     public ResponseEntity<OtpResponse> verifyOtp(@RequestBody OptRequest request){
@@ -67,8 +70,8 @@ public class AuthController {
 
             return ResponseEntity.ok(authResponse);
         } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(null);
 
-            throw new RuntimeException(" invalid access");
         }
     }
 
