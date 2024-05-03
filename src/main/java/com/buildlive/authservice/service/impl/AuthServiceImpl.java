@@ -7,6 +7,7 @@ import com.buildlive.authservice.exception.UserNotFoundException;
 import com.buildlive.authservice.repository.UserCredentialRepository;
 import com.buildlive.authservice.service.AuthService;
 import com.buildlive.authservice.service.JwtService;
+import com.buildlive.authservice.service.feign.AdminFeign;
 import com.buildlive.authservice.service.feign.UserFeign;
 import com.buildlive.authservice.util.EmailUtil;
 import com.buildlive.authservice.util.OtpUtil;
@@ -29,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final EmailUtil emailUtil;
     private final UserFeign userFeign;
+    private final AdminFeign adminFeign;
     private final OtpUtil otpUtil;
 
 
@@ -102,6 +104,65 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    @Override
+    public ResponseEntity<OtpDto> registerAdmin(RegisterRequest request) {
+        System.out.println("coming");
+        OtpDto response = new OtpDto();
+
+        if (isUserExists(request.getName(), request.getEmail())) {
+            response.setStatus("Failed");
+            response.setMessage("Username or email already exists, Try using another one");
+            System.out.println("coming2");
+            return ResponseEntity.badRequest().body(response);
+        }
+        String otp = otpUtil.generateOtp();
+        System.out.println("3");
+        try {
+
+            emailUtil.sendOtpToEmail(request.getEmail(),otp);
+            System.out.println("4");
+        }
+        catch (MessagingException e){
+            throw new RuntimeException("Failed,Please send otp again");
+        }
+        UserCredential admin = new UserCredential()
+                .builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .isBlocked(false)
+                .isVerified(false)
+                .otp(otp)
+                .expiryTime(LocalDateTime.now().plusMinutes(2))
+                .roles(Role.ADMIN)
+                .build();
+        System.out.println("5");
+
+        userCredentialRepository.save(admin);
+        System.out.println("6");
+
+        OtpDto otpDto = new OtpDto()
+                .builder()
+                .id(admin.getId())
+                .email(admin.getEmail())
+                .name(admin.getName())
+                .password(admin.getPassword())
+                .phone(admin.getPhone())
+                .otp(admin.getOtp())
+                .expiryTime(admin.getExpiryTime())
+                .isVerified(false)
+                .isBlocked(false)
+                .status("pending")
+                .message("Verify Otp")
+                .build();
+
+        System.out.println(otpDto.getOtp());
+        adminFeign.createAdmin(otpDto);
+
+        return ResponseEntity.ok(otpDto);
+    }
+
 
     @Override
     public void validateToken(String token){
@@ -160,6 +221,48 @@ public class AuthServiceImpl implements AuthService {
             return ResponseEntity.badRequest().body(otpResponse);
         }
 
+    }
+
+    @Override
+    public ResponseEntity<OtpResponse> verifyAdminAccount(OptRequest request) {
+        UUID id = request.getUserId();
+        OtpResponse otpResponse = new OtpResponse();
+        String name = request.getOtpValue();
+        System.out.println(name);
+        Optional<UserCredential> optionalAdmin = userCredentialRepository.findById(id);
+
+        if (optionalAdmin.isPresent()) {
+            UserCredential admin = optionalAdmin.get();
+
+            // Compare the user ID from the request and the retrieved user
+            if (admin.getId().equals(id)) {
+                // Verify the OTP
+                if (admin.getOtp().equals(request.getOtpValue())) {
+                    admin.setVerified(true);
+                    adminFeign.verifyAdmin(VerifyDto.builder()
+                            .id(admin.getId())
+                            .isVerified(admin.isVerified())
+                            .build());
+                    userCredentialRepository.save(admin);
+
+                    otpResponse.setStatus("Verified");
+                    otpResponse.setMessage("Admin OTP verified");
+                    return ResponseEntity.ok(otpResponse);
+                } else {
+                    otpResponse.setStatus("Failed");
+                    otpResponse.setMessage("Invalid OTP");
+                    return ResponseEntity.badRequest().body(otpResponse);
+                }
+            } else {
+                otpResponse.setStatus("Failed");
+                otpResponse.setMessage("ADMIN ID mismatch");
+                return ResponseEntity.badRequest().body(otpResponse);
+            }
+        } else {
+            otpResponse.setStatus("Failed");
+            otpResponse.setMessage("Admin not found");
+            return ResponseEntity.badRequest().body(otpResponse);
+        }
     }
 
     @Override

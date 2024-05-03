@@ -34,39 +34,39 @@ spring:
   profiles:
     active: "service"
   config:
-    import: "optional:configserver:http://localhost:8888"
-  zipkin:
-    base:
-      url: http://127.0.0.1:9411/
+    import: "optional:configserver:http://13.127.132.74:8888"
+#  zipkin:
+#    base:
+#      url: http://127.0.0.1:9411/
 
 
 
 
-management:
-  health:
-    circuitbreakers:
-      enabled: true
-    endpoints:
-      web:
-        exposure:
-          include: health
-    endpoint:
-      health:
-        show-details: always
-
-resilience4j:
-  circuitbreaker:
-    instances:
-      auth-service:
-        registerHealthIndicator: true
-        eventConsumerBufferSize: 10
-        failureRateThreshold: 50
-        minimumNumberOfCalls: 5
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowSize: 10
-        slidingWindowType: COUNT_BASED
+#management:
+#  health:
+#    circuitbreakers:
+#      enabled: true
+#    endpoints:
+#      web:
+#        exposure:
+#          include: health
+#    endpoint:
+#      health:
+#        show-details: always
+#
+#resilience4j:
+#  circuitbreaker:
+#    instances:
+#      auth-service:
+#        registerHealthIndicator: true
+#        eventConsumerBufferSize: 10
+#        failureRateThreshold: 50
+#        minimumNumberOfCalls: 5
+#        automaticTransitionFromOpenToHalfOpenEnabled: true
+#        waitDurationInOpenState: 5s
+#        permittedNumberOfCallsInHalfOpenState: 3
+#        slidingWindowSize: 10
+#        slidingWindowType: COUNT_BASED
 
 
 

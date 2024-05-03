@@ -13,11 +13,14 @@ public interface AuthService {
     String generateToken(String userName,String role);
     ResponseEntity<OtpDto> registerUser(RegisterRequest request);
 
+    ResponseEntity<OtpDto> registerAdmin(RegisterRequest request);
+
     void validateToken(String token);
 
     boolean isUserExists(String username,String email);
 
     ResponseEntity <OtpResponse>verifyAccount(OptRequest request);
+    ResponseEntity <OtpResponse>verifyAdminAccount(OptRequest request);
 
     AuthResponse getCompanyById(UUID uuid);
 
