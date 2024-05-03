@@ -24,6 +24,11 @@ public class UserController {
     @Autowired
     private AuthService authService;
 
+    @GetMapping("/test")
+        public String test(){
+            return "hello";
+        }
+
            @PutMapping("/users/edit-user")
             public ResponseEntity <UserCredential> editUser(
                                                     @RequestBody  UserCredential userCredential
