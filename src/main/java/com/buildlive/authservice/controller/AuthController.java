@@ -36,7 +36,7 @@ public class AuthController {
 
     @PostMapping("/verify-otp")
     public ResponseEntity<OtpResponse> verifyOtp(@RequestBody OptRequest request){
-        System.out.println("ooo");
+
         return authService.verifyAccount(request);
     }
 
@@ -44,14 +44,14 @@ public class AuthController {
 
     @PostMapping("/user-login")
     public ResponseEntity<AuthResponse> getToken(@RequestBody AuthRequest authRequest) {
-        System.out.println(authRequest.getName());
+
 
 
         UserCredential user = userCredentialRepository.findByName(authRequest.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 
-        System.out.println(authRequest.getPassword());
+
 
         if (user == null) {
             throw new InvalidLoginException("Invalid user");

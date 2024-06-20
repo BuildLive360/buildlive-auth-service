@@ -29,7 +29,7 @@ public class AdminController {
 
     @PostMapping("/admin-verifyotp")
     public ResponseEntity<OtpResponse> verifyOtp(@RequestBody OptRequest request){
-        System.out.println("ooo");
+
         return authService.verifyAdminAccount(request);
     }
 
