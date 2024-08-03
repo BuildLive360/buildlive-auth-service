@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "ADMIN-SERVICE")
+@FeignClient(name = "ADMIN-SERVICE",url = "http://18.190.72.144:8090")
 public interface AdminFeign {
 
     @PostMapping("/api/v1/admin/save-admin")
