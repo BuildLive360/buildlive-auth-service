@@ -6,7 +6,7 @@ spring:
   profiles:
     active: "service"
   config:
-    import: "optional:configserver:http://13.232.2.228:8888"
+    import: "optional:configserver:http://3.132.56.186:8888"
 
 
 
