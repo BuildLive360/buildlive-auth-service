@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@FeignClient(name = "USER-SERVICE",url = "http://65.0.180.219:8050")
+@FeignClient(name = "USER-SERVICE",url = "http://18.116.208.129:8050")
 public interface UserFeign {
 
         @PostMapping("/api/v1/user/save-user")
